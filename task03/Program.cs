@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Linq;
 
 namespace task03
 {
-    internal class Program
+    internal static class Program
     {
-        public delegate double MyDelegate(Delegate[] delegates);
-        public delegate int Delegate();
+        private delegate double MyDelegate(Delegate[] delegates);
+
+        private delegate int Delegate();
 
         private static void Main()
         {
-            Random random = new Random();
-            Delegate[] delegates = new Delegate[] {
+            var random = new Random();
+            var delegates = new Delegate[] {
                 delegate {
                     var result = random.Next(1, 10);
                     Console.WriteLine($"{result}");
@@ -22,20 +24,14 @@ namespace task03
                 } };
             MyDelegate myDelegate = delegate
             {
-                double result = 0;
-                for (int i = 0; i < delegates.Length; i++)
-                {
-                    result += delegates[i]();
-                }
+                var result = delegates.Aggregate<Delegate, double>(0, (current, t) => current + t());
                 if (delegates.Length > 0)
                 {
-                    return (double)result / delegates.Length;
+                    return result / delegates.Length;
                 }
-                else
-                {
-                    return 0;
-                }
-            }; ;
+
+                return 0;
+            };
             Console.WriteLine($"{myDelegate(delegates)}");
         }
     }
